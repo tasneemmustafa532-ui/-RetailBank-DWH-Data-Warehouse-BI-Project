@@ -1,0 +1,83 @@
+---------------- Silver.customer ----------------------
+SELECT 
+TRY_CAST(customer_id AS INT ) AS customer_id,
+TRY_CAST(cc_num AS bigint ) AS cc_num,
+TRY_CAST(first_name AS nvarchar(50) ) AS first_name,
+TRY_CAST(last_name AS nvarchar(50) ) AS last_name,
+ISNULL ( LTRIM(RTRIM(gender)), '') AS gender,
+TRY_CAST(street AS nvarchar(50)) AS [street],
+TRY_CAST(city AS nvarchar(50) )  AS [city],
+TRY_CAST(state AS nvarchar(50) ) AS [state],
+ISNULL (zip,'')                  AS [zip],
+TRY_CAST(lat AS decimal(9,4) )   AS [lat],
+TRY_CAST(long AS decimal(9,4) )  AS [long],
+TRY_CAST(city_pop AS INT)        AS [city_pop],
+TRY_CAST(job AS nvarchar(50) )   AS [job],
+TRY_CAST(dob AS date)  AS [dob],
+ISNULL (loyalty_tier,'UNknown')     AS [loyalty_tier],
+TRY_CAST(email_domain AS nvarchar)  AS [email_domain],
+TRY_CAST(signup_date AS date)       AS [signup_date]
+INTO Silver.Customers
+FROM [Bronze].[Customers]
+
+Alter Table Silver.[Customers] ALTER COLUMN customer_id INT NOT NULL;
+
+ALTER TABLE Silver.[Customers] ADD CONSTRAINT PK_Silver_customer PRIMARY KEY(customer_id);
+
+
+---------------- Silver.merchant ----------------------
+
+SELECT 
+TRY_CAST(merchant_id AS INT ) AS [merchant_id],
+TRY_CAST(merchant_name AS nvarchar(100) ) AS [merchant_name],
+ISNULL ( LTRIM(RTRIM(dominant_category)), '') AS [dominant_category],
+ISNULL ( LTRIM(RTRIM(merchant_city)), '') AS [merchant_city],
+ISNULL ( LTRIM(RTRIM(merchant_state)), '') AS [merchant_state],
+TRY_CAST(merchant_lat AS decimal(9,4) )  AS [merchant_lat],
+TRY_CAST(merchant_long AS decimal(9,4) )  AS [merchant_long],
+TRY_CAST(merchant_since AS DATE )          AS [merchant_since],
+TRY_CAST(is_active AS INT ) AS is_active
+
+INTO Silver.[Merchants]
+FROM Bronze.[Merchants]
+
+ALTER TABLE [Silver].[Merchants] ALTER COLUMN [merchant_id] INT NOT NULL;
+ALTER TABLE Silver.[Merchants] ADD CONSTRAINT PK_SILVER_card PRIMARY KEY ([merchant_id]);
+
+---------------- Silver.transaction ----------------------
+
+SELECT 
+TRY_CAST(transaction_id AS bigint)      AS transaction_id,
+TRY_CAST(trans_date_trans_time AS DATE) AS trans_date_trans_time,
+TRY_CAST([customer_id] AS INT )         AS customer_id,
+TRY_CAST([merchant_id] AS INT )         AS merchant_id,
+ISNULL ( LTRIM(RTRIM(category)), '')    AS [category],
+TRY_CAST(amt AS decimal(9,4) )          AS [amt],
+TRY_CAST(tax_amt AS decimal(9,4) )      AS [tax_amt],
+TRY_CAST(discount_amt AS decimal(9,4) ) AS [discount_amt],
+ISNULL ( LTRIM(RTRIM(currency)), '')    AS [currency],
+TRY_CAST(payment_method AS varchar(50)) AS payment_method,
+TRY_CAST(channel AS nvarchar(50))       AS channel,
+TRY_CAST(entry_mode AS nvarchar(50))    AS entry_mode,
+TRY_CAST(device_type AS nvarchar(50))   AS device_mode,
+ISNULL ( LTRIM(RTRIM(transaction_status)), '') AS [transaction_status],
+TRY_CAST(trans_num AS VARCHAR (50))        AS [trans_num],
+ISNULL (session_id,'UNKOWN_session')    AS [session_id],
+TRY_CAST(unix_time AS INT)              AS unix_time,
+TRY_CAST(is_fraud AS INT)               AS is_fraud
+
+INTO Silver.Transactions
+FROM Bronze.[Transactions];
+
+ALTER TABLE Silver.Transactions ALTER COLUMN transaction_id INT NOT NULL;
+ALTER TABLE Silver.Transactions ADD CONSTRAINT PK_Silver_transaction PRIMARY KEY (transaction_id);
+
+SELECT TOP 5 *
+FROM Silver.Transactions;
+
+
+SELECT TOP 5 *
+FROM Silver.Customers
+
+SELECT TOP 5 *
+FROM Silver.Merchants
